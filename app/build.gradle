@@ -1,0 +1,61 @@
+apply plugin: 'com.android.application'
+apply plugin: "com.jaredsburrows.license"
+
+licenseReport {
+    generateHtmlReport = true
+    generateJsonReport = true
+
+    // These options are ignored for Java projects
+    copyJsonReportToAssets = true
+}
+
+android.applicationVariants.all { variant ->
+    def variantCapitalized = variant.name.capitalize()
+
+    def assembleTask = tasks.getByName("assemble$variantCapitalized")
+    def licenseTask = tasks.getByName("license${variantCapitalized}Report")
+
+    assembleTask.dependsOn licenseTask
+}
+
+//android.applicationVariants.all { variant ->
+//    def variantCapitalized = variant.name.capitalize()
+//
+//    File outputDir = project.file("$project.buildDir/reports/licenses")
+//
+//    def generateLicensesTask = project.tasks.create "generate${variantCapitalized}Licenses", com.jaredsburrows.license.LicenseReportTask
+//    generateLicensesTask.generateHtmlReport = false
+//    generateLicensesTask.generateJsonReport = true
+//    generateLicensesTask.copyJsonReportToAssets = true
+//    generateLicensesTask.htmlFile = project.file("$outputDir.path/open-source-licenses.html")
+//    generateLicensesTask.jsonFile = project.file("$outputDir.path/open-source-licenses.json")
+//
+//    variant.registerResGeneratingTask(generateLicensesTask, outputDir)
+//}
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "io.supercharge.myapplication"
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
